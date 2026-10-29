@@ -1,0 +1,23 @@
+{
+  "name": "express-course",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/bharat-code99/express-course#readme",
+  "bugs": {
+    "url": "https://github.com/bharat-code99/express-course/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bharat-code99/express-course.git"
+  },
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^5.3.0"
+  }
+}
