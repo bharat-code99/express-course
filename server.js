@@ -26,22 +26,29 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Get all posts
 app.get("/api/posts", (req, res) => {
-  res.json(posts);
+  const limit = parseInt(req.query.limit);
+  if (!isNaN(limit) && limit > 0) {
+    return res.status(200).json(posts.slice(0, limit));
+  }
+  res.status(200).json(posts);
 });
 
 // Get single posts
 app.get("/api/posts/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const post = posts.find((post) => post.id === id);
-  res.json(post);
+  if (!post) {
+    return res.status(404).json({ msg: `Post with id: ${id} not found` });
+  }
+  res.status(200).json(post);
 });
 
-app.get("/api/", (req, res) => {
-  res.send({ message: "Home Page" });
-});
+// app.get("/api/", (req, res) => {
+//   res.send({ message: "Home Page" });
+// });
 
-app.get("/api/about", (req, res) => {
-  res.send({ message: "About Page" });
-});
+// app.get("/api/about", (req, res) => {
+//   res.send({ message: "About Page" });
+// });
 
 app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
