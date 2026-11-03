@@ -29,10 +29,65 @@ router.get("/:id", (req, res) => {
 
 // Create new post
 router.post("/", (req, res) => {
-  console.log(req.body);
-  const newPost = { id: posts.length + 1, title: req.body.title };
+  const { title } = req.body ?? {};
+
+  if (typeof title !== "string" || !title.trim()) {
+    return res.status(400).json({
+      message: "Please provide a valid title.",
+    });
+  }
+
+  const newPost = {
+    id: posts.length + 1,
+    title: title.trim(),
+  };
+
   posts.push(newPost);
-  res.status(201).json(posts);
+
+  return res.status(201).json(newPost);
+});
+
+// Update Post
+router.patch("/:id", (req, res) => {
+  // 1. Validate ID
+  const id = Number(req.params.id);
+
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid ID. Please provide a valid positive integer ID",
+    });
+  }
+
+  // 2. Find the post
+  const currPost = posts.find((post) => post.id === id);
+
+  if (!currPost) {
+    return res.status(404).json({
+      success: false,
+      message: `Post with ID ${id} not found`,
+    });
+  }
+
+  // 3. Validate request body
+  const { title } = req.body ?? {};
+
+  if (typeof title !== "string" || !title.trim()) {
+    return res.status(400).json({
+      success: false,
+      message: "Title is required and must be a non-empty string",
+    });
+  }
+
+  // 4. Update post
+  currPost.title = title.trim();
+
+  // 5. Return updated post
+  return res.status(200).json({
+    success: true,
+    message: "Post updated successfully",
+    data: currPost,
+  });
 });
 
 export default router;
