@@ -8,6 +8,21 @@ const posts = [
   { id: 3, title: "Post Three" },
 ];
 
+const validateId = (req, res, next) => {
+  const id = Number(req.params.id);
+
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid ID. Please provide a valid positive integer ID",
+    });
+  }
+
+  req.postId = id;
+
+  next();
+};
+
 // Get all posts
 router.get("/", (req, res) => {
   const limit = parseInt(req.query.limit);
@@ -18,8 +33,8 @@ router.get("/", (req, res) => {
 });
 
 // Get single posts
-router.get("/:id", (req, res) => {
-  const id = parseInt(req.params.id);
+router.get("/:id", validateId, (req, res) => {
+  const id = req.postId;
   const post = posts.find((post) => post.id === id);
   if (!post) {
     return res.status(404).json({ msg: `Post with id: ${id} not found` });
@@ -48,16 +63,9 @@ router.post("/", (req, res) => {
 });
 
 // Update Post
-router.patch("/:id", (req, res) => {
+router.put("/:id", validateId, (req, res) => {
   // 1. Validate ID
-  const id = Number(req.params.id);
-
-  if (!Number.isSafeInteger(id) || id <= 0) {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid ID. Please provide a valid positive integer ID",
-    });
-  }
+  const id = req.postId;
 
   // 2. Find the post
   const currPost = posts.find((post) => post.id === id);
@@ -87,6 +95,27 @@ router.patch("/:id", (req, res) => {
     success: true,
     message: "Post updated successfully",
     data: currPost,
+  });
+});
+
+// Delete Post
+router.delete("/:id", validateId, (req, res) => {
+  const id = req.postId;
+
+  const idx = posts.findIndex((post) => post.id === id);
+
+  if (idx === -1) {
+    return res.status(404).json({
+      success: false,
+      message: `Post with id: ${id} not found`,
+    });
+  }
+
+  posts.splice(idx, 1);
+
+  return res.status(200).json({
+    success: true,
+    message: `Post with id ${id} deleted successfully`,
   });
 });
 
