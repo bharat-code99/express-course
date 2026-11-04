@@ -2,6 +2,9 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import router from "./routes/posts.js";
+import logger from "./middleware/logger.js";
+import errorHandler from "./middleware/errorHandler.js";
+import notFound from "./middleware/notFound.js";
 
 const PORT = process.env.PORT || 8000;
 const __filename = fileURLToPath(import.meta.url);
@@ -13,7 +16,14 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Logger Middleware
+app.use(logger);
+
 app.use("/api/posts", router);
+
+app.use(notFound);
+
+app.use(errorHandler);
 
 // app.use(express.static(path.join(__dirname, "public")));
 

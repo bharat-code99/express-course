@@ -1,4 +1,5 @@
 import express from "express";
+import validateId from "../middleware/validateId.js";
 
 const router = express.Router();
 
@@ -8,23 +9,8 @@ const posts = [
   { id: 3, title: "Post Three" },
 ];
 
-const validateId = (req, res, next) => {
-  const id = Number(req.params.id);
-
-  if (!Number.isSafeInteger(id) || id <= 0) {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid ID. Please provide a valid positive integer ID",
-    });
-  }
-
-  req.postId = id;
-
-  next();
-};
-
 // Get all posts
-router.get("/", (req, res) => {
+router.get("/", (req, res, next) => {
   const limit = parseInt(req.query.limit);
   if (!isNaN(limit) && limit > 0) {
     return res.status(200).json(posts.slice(0, limit));
@@ -32,18 +18,21 @@ router.get("/", (req, res) => {
   res.status(200).json(posts);
 });
 
-// Get single posts
-router.get("/:id", validateId, (req, res) => {
+// Get single post
+router.get("/:id", validateId, (req, res, next) => {
   const id = req.postId;
   const post = posts.find((post) => post.id === id);
   if (!post) {
-    return res.status(404).json({ msg: `Post with id: ${id} not found` });
+    const error = new Error(`Post with id: ${id} not found`);
+    error.status = 404;
+    return next(error);
+    // return res.status(404).json({ msg: `Post with id: ${id} not found` });
   }
   res.status(200).json(post);
 });
 
 // Create new post
-router.post("/", (req, res) => {
+router.post("/", (req, res, next) => {
   const { title } = req.body ?? {};
 
   if (typeof title !== "string" || !title.trim()) {
@@ -63,7 +52,7 @@ router.post("/", (req, res) => {
 });
 
 // Update Post
-router.put("/:id", validateId, (req, res) => {
+router.put("/:id", validateId, (req, res, next) => {
   // 1. Validate ID
   const id = req.postId;
 
@@ -99,7 +88,7 @@ router.put("/:id", validateId, (req, res) => {
 });
 
 // Delete Post
-router.delete("/:id", validateId, (req, res) => {
+router.delete("/:id", validateId, (req, res, next) => {
   const id = req.postId;
 
   const idx = posts.findIndex((post) => post.id === id);
