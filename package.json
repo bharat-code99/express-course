@@ -18,6 +18,7 @@
     "dev": "node --watch --env-file=.env server.js"
   },
   "dependencies": {
+    "colors": "^1.4.0",
     "express": "^5.3.0"
   }
 }

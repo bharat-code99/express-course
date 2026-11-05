@@ -19,12 +19,14 @@ app.use(express.urlencoded({ extended: false }));
 // Logger Middleware
 app.use(logger);
 
+// Routes
 app.use("/api/posts", router);
 
 app.use(notFound);
 
 app.use(errorHandler);
 
+// HTML Pages
 // app.use(express.static(path.join(__dirname, "public")));
 
 // app.get("/", (req, res) => {
@@ -33,14 +35,6 @@ app.use(errorHandler);
 
 // app.get("/about", (req, res) => {
 //   res.sendFile(path.join(__dirname, "public", "about.html"));
-// });
-
-// app.get("/api/", (req, res) => {
-//   res.send({ message: "Home Page" });
-// });
-
-// app.get("/api/about", (req, res) => {
-//   res.send({ message: "About Page" });
 // });
 
 app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
