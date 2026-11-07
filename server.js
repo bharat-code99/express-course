@@ -22,12 +22,12 @@ app.use(logger);
 // Routes
 app.use("/api/posts", router);
 
+// HTML Pages
+app.use(express.static(path.join(__dirname, "public")));
+
 app.use(notFound);
 
 app.use(errorHandler);
-
-// HTML Pages
-// app.use(express.static(path.join(__dirname, "public")));
 
 // app.get("/", (req, res) => {
 //   res.sendFile(path.join(__dirname, "public", "home.html"));
